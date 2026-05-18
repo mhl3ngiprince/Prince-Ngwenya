@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react'
 
 const stats = [
-  { icon: '💼', value: '15+', label: 'Projects Delivered' },
-  { icon: '🚀', value: '5+', label: 'Years Experience' },
-  { icon: '🌐', value: '10+', label: 'Industries Served' }
+  { icon: '💻', value: '10+', label: 'Projects & Apps Built' },
+  { icon: '🚀', value: '3rd Year', label: 'ICT (App Development)' },
+  { icon: '🌐', value: 'Full', label: 'Stack Capabilities' }
 ]
 
 const heroPhrases = [
-  'Digital Experiences',
-  'Growth-driven Interfaces',
-  'Elegant Web Systems'
+  'Scalable Web Systems',
+  'Robust Application Logic',
+  'Cloud-Integrated Backends'
 ]
+
+const assetBase = import.meta.env.BASE_URL || '/'
 
 const Hero = () => {
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -55,7 +57,7 @@ const Hero = () => {
     <section className="hero hero-landing" id="home" aria-labelledby="hero-title">
       <div className="hero-video-wrapper" aria-hidden="true">
         <video className="hero-video" autoPlay muted loop playsInline>
-          <source src="/portfolio.mp4" type="video/mp4" />
+          <source src={`${assetBase}portfolio.mp4`} type="video/mp4" />
           Your browser does not support video backgrounds.
         </video>
         <div className="hero-video-mask" />
@@ -72,7 +74,7 @@ const Hero = () => {
           </h1>
 
           <p className="hero-subtitle">
-            Hi, I’m Prince — a full-stack creator building polished interfaces, modern brands, and web apps that scale.
+            Hi, I’m Prince — an Application Developer building clean interfaces, robust backend logic, and software solutions that scale.
           </p>
 
           <div className="hero-actions">
@@ -81,13 +83,13 @@ const Hero = () => {
               <span className="btn-arrow">→</span>
             </a>
             <a href="#contact" className="btn btn-secondary">
-              Book a call
+              Get in touch
             </a>
           </div>
 
           <div className="hero-notes">
-            <div className="hero-badge">Design system, Web performance, AI tools</div>
-            <p>Built for professionals who want an unforgettable digital presence.</p>
+            <div className="hero-badge">Java • Python • C# • React • Cloud Infrastructure</div>
+            <p>Engineered with structural integrity, performance optimization, and clean architecture.</p>
           </div>
         </div>
 
@@ -96,7 +98,7 @@ const Hero = () => {
             <div className="hero-card-header">
               <div className="avatar-frame">
                 <img
-                  src="/prince.jpeg"
+                  src={`${assetBase}prince.jpeg`}
                   alt="Mhlengie Prince Ngwenya"
                   className={`avatar ${imageLoaded ? 'loaded' : ''} ${avatarHover ? 'hovered' : ''}`}
                   onLoad={() => setImageLoaded(true)}
@@ -108,12 +110,12 @@ const Hero = () => {
               </div>
               <div>
                 <p className="hero-card-title">Mhlengie Prince</p>
-                <p className="hero-card-subtitle">Creative Lead & Software Engineer</p>
+                <p className="hero-card-subtitle">Application Developer & Software Engineer</p>
               </div>
             </div>
 
             <p className="hero-card-copy">
-              I design premium web experiences with speed, polish, and strategic clarity. My work blends visual storytelling with practical engineering.
+              I develop modern software applications bridging intuitive frontends with powerful server-side code. My focus is on web engineering, data flows, and secure deployment.
             </p>
 
             <div className="hero-card-stats">
@@ -128,12 +130,12 @@ const Hero = () => {
 
           <div className="hero-highlights">
             <article className="hero-highlight glass-card">
-              <h3>Fast Delivery</h3>
-              <p>Launch modern, responsive web experiences with best-in-class tooling and production-ready accessibility.</p>
+              <h3>Full-Stack Logic</h3>
+              <p>Efficient database management and secure, RESTful API integrations built with production-ready frameworks.</p>
             </article>
             <article className="hero-highlight glass-card">
-              <h3>Modern UI</h3>
-              <p>Clean layouts, premium motion, and interface details built to impress clients and hiring teams.</p>
+              <h3>Clean Code Architecture</h3>
+              <p>Strong adherence to OOP principles, structural patterns, and performance metrics to ensure code maintainability.</p>
             </article>
           </div>
         </aside>
