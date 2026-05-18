@@ -158,12 +158,55 @@ body{
   gap: 1.4rem;
 }
 
+.hero-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 1.4rem;
+  align-items: start;
+}
+
 .hero-card {
   padding: 1.8rem;
   border-radius: 28px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(7,10,24,0.88);
   box-shadow: 0 38px 110px rgba(0,0,0,0.28);
+}
+
+.hero-avatar-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  padding: 1.8rem;
+}
+
+.hero-avatar-panel-frame {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+}
+
+.hero-avatar-panel-frame .avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.hero-avatar-content {
+  margin-top: 1.25rem;
+}
+
+.hero-avatar-caption {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.hero-avatar-copy {
+  margin: 0.85rem 0 0;
+  color: rgba(235,240,255,0.82);
+  line-height: 1.8;
 }
 
 .hero-card-header {
@@ -296,6 +339,10 @@ body{
   .hero-inner {
     grid-template-columns: 1fr;
     padding: 3rem var(--spacing-sm) 3rem;
+  }
+
+  .hero-panel-grid {
+    grid-template-columns: 1fr;
   }
 
   .hero-actions {

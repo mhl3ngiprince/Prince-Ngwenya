@@ -94,9 +94,31 @@ const Hero = () => {
         </div>
 
         <aside className="hero-panel fade-in fade-in-delay-2">
-          <div className="hero-card glass-card">
-            <div className="hero-card-header">
-              <div className="avatar-frame">
+          <div className="hero-panel-grid">
+            <div className="hero-card glass-card">
+              <div className="hero-card-header hero-card-header-no-avatar">
+                <div>
+                  <p className="hero-card-title">Mhlengie Prince</p>
+                  <p className="hero-card-subtitle">Application Developer & Software Engineer</p>
+                </div>
+              </div>
+
+              <p className="hero-card-copy">
+                I develop modern software applications bridging intuitive frontends with powerful server-side code. My focus is on web engineering, data flows, and secure deployment.
+              </p>
+
+              <div className="hero-card-stats">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="hero-stat-item">
+                    <div className="hero-stat-value">{stat.value}</div>
+                    <div className="hero-stat-label">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="hero-avatar-panel glass-card">
+              <div className="avatar-frame hero-avatar-panel-frame">
                 <img
                   src={`${assetBase}prince.jpeg`}
                   alt="Mhlengie Prince Ngwenya"
@@ -108,23 +130,10 @@ const Hero = () => {
                   loading="eager"
                 />
               </div>
-              <div>
-                <p className="hero-card-title">Mhlengie Prince</p>
-                <p className="hero-card-subtitle">Application Developer & Software Engineer</p>
+              <div className="hero-avatar-content">
+                <p className="hero-avatar-caption">Prince Ngwenya</p>
+                <p className="hero-avatar-copy">A strong visual introduction with my portrait positioned beside the portfolio summary.</p>
               </div>
-            </div>
-
-            <p className="hero-card-copy">
-              I develop modern software applications bridging intuitive frontends with powerful server-side code. My focus is on web engineering, data flows, and secure deployment.
-            </p>
-
-            <div className="hero-card-stats">
-              {stats.map((stat) => (
-                <div key={stat.label} className="hero-stat-item">
-                  <div className="hero-stat-value">{stat.value}</div>
-                  <div className="hero-stat-label">{stat.label}</div>
-                </div>
-              ))}
             </div>
           </div>
 
