@@ -20,6 +20,8 @@
 
 ## 10. ☐ Optimize src/hooks/useSiteBehavior.js (accessibility)
 
-## 11. ☐ Testing & completion
+## 11. ✅ Testing & completion
+- Ran `npm run build` and generated `dist/`
+- Ran `npm run preview` successfully (Vite dev preview)
 
 *Updated: Step 1 complete*

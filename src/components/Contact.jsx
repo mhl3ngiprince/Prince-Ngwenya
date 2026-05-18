@@ -1,30 +1,73 @@
 import React, { useEffect, useState } from 'react'
-import emailjs from '@emailjs/browser';
+import emailjs from '@emailjs/browser'
 
 const Contact = () => {
+  const [formData, setFormData] = useState({ user_name: '', user_email: '', message: '' })
+  const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
   const [feedback, setFeedback] = useState('')
 
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || ''
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || ''
+  const emailConfigured = Boolean(publicKey && serviceId && templateId)
+
   useEffect(() => {
-    emailjs.init('YOUR_PUBLIC_KEY');
-  }, []);
+    if (publicKey) {
+      emailjs.init(publicKey)
+    }
+  }, [publicKey])
+
+  const validate = () => {
+    const nextErrors = {}
+    if (!formData.user_name.trim()) nextErrors.user_name = 'Please enter your name.'
+    if (!formData.user_email.trim()) {
+      nextErrors.user_email = 'Please enter an email.'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.user_email)) {
+      nextErrors.user_email = 'Please enter a valid email address.'
+    }
+    if (!formData.message.trim()) nextErrors.message = 'Please enter a message.'
+    return nextErrors
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((current) => ({ ...current, [name]: value }))
+    setErrors((current) => ({ ...current, [name]: '' }))
+  }
 
   const sendEmail = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+
+    const nextErrors = validate()
+    if (Object.keys(nextErrors).length) {
+      setErrors(nextErrors)
+      setFeedback('Please fix the highlighted fields before submitting.')
+      setStatus('error')
+      return
+    }
+
+    if (!emailConfigured) {
+      setStatus('error')
+      setFeedback('Email service is not set up yet. Please reach out directly at mhlengip269@gmail.com.')
+      return
+    }
+
     setStatus('sending')
-    
+    setFeedback('')
+
     try {
-      await emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', e.target, 'YOUR_PUBLIC_KEY')
+      await emailjs.sendForm(serviceId, templateId, e.target, publicKey)
       setStatus('success')
-      setFeedback('✓ Message sent successfully! I\'ll get back to you soon.')
-      e.target.reset();
+      setFeedback("Message sent successfully! I'll get back to you soon.")
+      setFormData({ user_name: '', user_email: '', message: '' })
       setTimeout(() => setStatus('idle'), 4000)
     } catch (error) {
-      setStatus('idle')
+      console.error(error)
+      setStatus('error')
       setFeedback('Failed to send. Please email: mhlengip269@gmail.com')
-      console.error(error);
     }
-  };
+  }
 
   const contacts = [
     { icon: '✉️', label: 'Email', value: 'mhlengip269@gmail.com', href: 'mailto:mhlengip269@gmail.com' },
@@ -34,77 +77,87 @@ const Contact = () => {
   ]
 
   return (
-    <div className="glass-card fade-in">
-      <h2 className="section-title fade-in">Let's Connect</h2>
-      <p className="muted">Interested in collaborating or discussing opportunities? I'd love to hear from you.</p>
-      
-      <form style={{marginTop: '2rem'}} id="contact-form" onSubmit={sendEmail}>
-        <div style={{display: 'grid', gap: '1rem'}}>
+    <div className="glass-card fade-in" aria-labelledby="contact-heading">
+      <h2 id="contact-heading" className="section-title fade-in">Let's Connect</h2>
+      <p className="muted fade-in">Interested in collaborating or discussing opportunities? I'd love to hear from you.</p>
+
+      <form id="contact-form" className="contact-form" onSubmit={sendEmail} noValidate>
+        <div className="form-grid">
           <div className="form-group">
-            <label htmlFor="user_name" style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500}}>Name</label>
-            <input 
+            <label htmlFor="user_name">Name</label>
+            <input
               id="user_name"
-              name="user_name" 
-              placeholder="Your full name" 
+              name="user_name"
+              value={formData.user_name}
+              onChange={handleChange}
+              placeholder="Your full name"
               className="form-input"
-              required 
+              aria-describedby="user_name_error"
+              aria-invalid={Boolean(errors.user_name)}
+              required
             />
+            {errors.user_name && <p id="user_name_error" className="error-text">{errors.user_name}</p>}
           </div>
+
           <div className="form-group">
-            <label htmlFor="user_email" style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500}}>Email</label>
-            <input 
+            <label htmlFor="user_email">Email</label>
+            <input
               id="user_email"
-              name="user_email" 
-              type="email" 
-              placeholder="your@email.com" 
+              name="user_email"
+              type="email"
+              value={formData.user_email}
+              onChange={handleChange}
+              placeholder="your@email.com"
               className="form-input"
-              required 
+              aria-describedby="user_email_error"
+              aria-invalid={Boolean(errors.user_email)}
+              required
             />
+            {errors.user_email && <p id="user_email_error" className="error-text">{errors.user_email}</p>}
           </div>
-          <div className="form-group">
-            <label htmlFor="message" style={{display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 500}}>Message</label>
-            <textarea 
+
+          <div className="form-group form-group-full">
+            <label htmlFor="message">Message</label>
+            <textarea
               id="message"
-              name="message" 
-              rows="5" 
-              placeholder="Tell me about your project or opportunity..." 
+              name="message"
+              rows="5"
+              value={formData.message}
+              onChange={handleChange}
+              placeholder="Tell me about your project or opportunity..."
               className="form-input"
-              required 
+              aria-describedby="message_error"
+              aria-invalid={Boolean(errors.message)}
+              required
             />
+            {errors.message && <p id="message_error" className="error-text">{errors.message}</p>}
           </div>
-          <button 
-            type="submit" 
-            className="btn btn-primary" 
-            style={{justifySelf: 'start', opacity: status === 'sending' ? 0.7 : 1}}
-            disabled={status === 'sending'}
-          >
+
+          <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
             {status === 'sending' ? 'Sending...' : 'Send Message'}
           </button>
-          {feedback && (
-            <p style={{
-              marginTop: '0.5rem',
-              fontSize: '0.9rem',
-              color: status === 'success' ? '#90EE90' : '#FFB6C6'
-            }}>
-              {feedback}
-            </p>
-          )}
         </div>
+
+        {feedback && (
+          <p className={`status-message ${status === 'success' ? 'success' : 'error'}`} role="status" aria-live="polite">
+            {feedback}
+          </p>
+        )}
       </form>
 
-      <div style={{marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--glass-strong)'}}>
-        <h3 style={{marginBottom: '1rem', fontSize: '1rem', fontWeight: 600}}>Or reach out directly:</h3>
+      <div className="contact-direct fade-in">
+        <h3>Or reach out directly:</h3>
         <div className="contact-grid">
-          {contacts.map((contact, idx) => (
-            <a 
-              key={idx}
+          {contacts.map((contact) => (
+            <a
+              key={contact.label}
               href={contact.href}
-              target="_blank" 
-              rel="noreferrer noopener" 
+              target="_blank"
+              rel="noreferrer noopener"
               className="contact-link"
               aria-label={`Connect via ${contact.label}`}
             >
-              <span className="contact-icon">{contact.icon}</span>
+              <span className="contact-icon" aria-hidden="true">{contact.icon}</span>
               <div>
                 <div className="contact-label">{contact.label}</div>
                 <div className="contact-value">{contact.value}</div>

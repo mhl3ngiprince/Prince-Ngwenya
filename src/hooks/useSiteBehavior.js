@@ -2,97 +2,123 @@ import { useEffect } from 'react'
 
 export default function useSiteBehavior() {
   useEffect(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (typeof window === 'undefined') return
 
-    // Particles
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (prefersReducedMotion.matches) return
+
     const particlesEl = document.getElementById('particles')
     if (particlesEl) {
       const count = window.innerWidth < 768 ? 30 : 60
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement('div')
-        p.className = 'particle'
-        p.style.left = Math.random() * 100 + '%'
-        p.style.top = Math.random() * 100 + '%'
-        p.style.animationDelay = Math.random() * 6 + 's'
-        p.style.animationDuration = (Math.random() * 3 + 3) + 's'
-        particlesEl.appendChild(p)
+      for (let i = 0; i < count; i += 1) {
+        const particle = document.createElement('div')
+        particle.className = 'particle'
+        particle.style.left = `${Math.random() * 100}%`
+        particle.style.top = `${Math.random() * 100}%`
+        particle.style.animationDelay = `${Math.random() * 6}s`
+        particle.style.animationDuration = `${Math.random() * 3 + 3}s`
+        particlesEl.appendChild(particle)
       }
     }
 
-    // Smooth scrolling for internal anchors
-    const anchors = Array.from(document.querySelectorAll('a[href^="#"]'))
     const header = document.querySelector('.header')
-    function onAnchorClick(e) {
-      const href = this.getAttribute('href')
-      if (!href || href === '#') return
-      const target = document.querySelector(href)
-      if (target) {
-        e.preventDefault()
-        const headerHeight = header ? header.offsetHeight : 0
-        const top = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 16
-        window.scrollTo({ top, behavior: 'smooth' })
-      }
-    }
-    anchors.forEach(a => a.addEventListener('click', onAnchorClick))
+    const hero = document.querySelector('.hero')
+    const scrollProgress = document.querySelector('.scroll-progress')
+    const sections = Array.from(document.querySelectorAll('section[id]'))
+    const anchors = Array.from(document.querySelectorAll('a[href^="#"]:not([href="#"])'))
+    const navLinks = Array.from(document.querySelectorAll('.nav-link'))
 
-    // Fade-in observer
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible')
-          obs.unobserve(entry.target)
+    const onAnchorClick = (event) => {
+      const anchor = event.currentTarget
+      const href = anchor.getAttribute('href')
+      if (!href) return
+
+      const target = document.querySelector(href)
+      if (!target) return
+
+      event.preventDefault()
+      const headerHeight = header ? header.offsetHeight : 0
+      const top = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 16
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
+
+    anchors.forEach((anchor) => anchor.addEventListener('click', onAnchorClick))
+
+    const handleMouseMove = (event) => {
+      if (!hero) return
+      const x = (event.clientX / window.innerWidth - 0.5) * 24
+      const y = (event.clientY / window.innerHeight - 0.5) * 18
+      hero.style.setProperty('--mouse-x', `${x}px`)
+      hero.style.setProperty('--mouse-y', `${y}px`)
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible')
+            obs.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.12 }
+    )
+
+    document.querySelectorAll('.fade-in').forEach((element) => observer.observe(element))
+
+    const updateActiveNav = () => {
+      let activeSection = ''
+      sections.forEach((section) => {
+        const offset = section.offsetTop - 200
+        if (window.pageYOffset >= offset) {
+          activeSection = section.id
         }
       })
-    }, { threshold: 0.12 })
 
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
-
-    // Active nav tracking
-    const navLinks = Array.from(document.querySelectorAll('.nav-link'))
-    const sections = Array.from(document.querySelectorAll('section[id]'))
-    function updateActive() {
-      let current = ''
-      sections.forEach(section => {
-        const top = section.offsetTop - 200
-        if (window.pageYOffset >= top) current = section.id
-      })
-      navLinks.forEach(link => {
-        link.classList.toggle('active', link.getAttribute('href') === `#${current}`)
+      navLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${activeSection}`)
       })
     }
-    updateActive()
-    window.addEventListener('scroll', updateActive)
 
-    // Navbar background effect
-    function onScrollNavbar() {
-      const h = document.querySelector('.header')
-      if (!h) return
+    const updateNavbarState = () => {
+      if (!header) return
       if (window.pageYOffset > 80) {
-        h.style.background = 'rgba(0,0,0,0.82)'
+        header.style.background = 'rgba(0, 0, 0, 0.82)'
       } else {
-        h.style.background = ''
+        header.style.background = ''
       }
     }
-    window.addEventListener('scroll', onScrollNavbar)
 
-    // Scroll progress
-    function updateScrollProgress() {
-      const progress = document.querySelector('.scroll-progress')
-      if (progress) {
-        const scrollTop = window.pageYOffset
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight
-        const scrollPercent = (scrollTop / docHeight) * 100
-        progress.style.width = scrollPercent + '%'
-      }
+    const updateScrollProgress = () => {
+      if (!scrollProgress) return
+      const scrollTop = window.pageYOffset
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = documentHeight > 0 ? (scrollTop / documentHeight) * 100 : 0
+      scrollProgress.style.width = `${progress}%`
     }
-    window.addEventListener('scroll', updateScrollProgress)
 
-    // cleanup
+    const handleScroll = () => {
+      updateActiveNav()
+      updateNavbarState()
+      updateScrollProgress()
+    }
+
+    updateActiveNav()
+    updateNavbarState()
+    updateScrollProgress()
+
+    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('resize', updateActiveNav)
+
     return () => {
-      anchors.forEach(a => a.removeEventListener('click', onAnchorClick))
-      window.removeEventListener('scroll', updateActive)
-      window.removeEventListener('scroll', onScrollNavbar)
+      anchors.forEach((anchor) => anchor.removeEventListener('click', onAnchorClick))
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', updateActiveNav)
+      window.removeEventListener('mousemove', handleMouseMove)
       if (particlesEl) particlesEl.innerHTML = ''
+      observer.disconnect()
     }
   }, [])
 }

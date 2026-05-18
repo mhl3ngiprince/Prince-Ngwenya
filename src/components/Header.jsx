@@ -1,35 +1,45 @@
 import React, { useState } from 'react'
 
+const navItems = [
+  { label: 'About', href: '#about' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'GitHub', href: '#github' },
+  { label: 'Contact', href: '#contact' }
+]
 
 const Header = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false)
 
-  const toggleMobile = () => setMobileOpen(!mobileOpen);
+  const toggleMobile = () => setMobileOpen((current) => !current)
+  const closeMobile = () => setMobileOpen(false)
 
   return (
     <header className="header" role="banner">
-      <div className="container">
+      <div className="container header-inner">
 
         <a className="logo" href="#home">Mhlengie</a>
-        <button 
-          className="nav-hamburger" 
+        <button
+          type="button"
+          className={`nav-hamburger ${mobileOpen ? 'open' : ''}`}
           onClick={toggleMobile}
-          aria-label="Toggle navigation"
+          aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={mobileOpen}
           aria-controls="nav-list"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <span />
+          <span />
+          <span />
         </button>
-        <nav aria-label="Main navigation">
-          <ul id="nav-list" className={`nav-list ${mobileOpen ? 'open' : ''}`} role="menubar" style={{marginLeft:'auto'}}>
-
-            <li role="none"><a className="nav-link" role="menuitem" href="#about">About</a></li>
-            <li role="none"><a className="nav-link" role="menuitem" href="#experience">Experience</a></li>
-            <li role="none"><a className="nav-link" role="menuitem" href="#projects">Projects</a></li>
-            <li role="none"><a className="nav-link" role="menuitem" href="#github">GitHub</a></li>
-            <li role="none"><a className="nav-link" role="menuitem" href="#contact">Contact</a></li>
+        <nav className="nav" aria-label="Main navigation">
+          <ul id="nav-list" className={`nav-list ${mobileOpen ? 'open' : ''}`}>
+            {navItems.map((item) => (
+              <li key={item.href} className="nav-item">
+                <a className="nav-link" href={item.href} onClick={closeMobile}>
+                  {item.label}
+                </a>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
